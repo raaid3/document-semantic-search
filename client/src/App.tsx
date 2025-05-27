@@ -1,6 +1,7 @@
 import { Button } from "@mui/material";
 import { type FormEvent, type ChangeEvent } from "react";
 import { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 function App() {
   const [fileChosen, setFileChosen] = useState<boolean>(false);
@@ -15,7 +16,16 @@ function App() {
     if (fileChosen) {
       const form = event.currentTarget;
       const formData = new FormData(form);
-      // const file = formData.get("file") as File;
+
+      // make an id for this user
+      let userId = localStorage.getItem("userId");
+      if (!userId) {
+        userId = uuidv4();
+        localStorage.setItem("userId", userId);
+      }
+
+      // add this to the formData
+      formData.set("userId", userId);
 
       // send file to API for doing stuff with it
       try {

@@ -6,7 +6,7 @@ import removeMarkdown from "remove-markdown"
 const chunkSize = 1000; // characters
 const chunkOverlap = 0; // characters
 
-interface MarkdownChunk {
+export interface MarkdownChunk {
   _id: ObjectId;
   content: string;
   rawMarkdown: string;

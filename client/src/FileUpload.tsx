@@ -1,11 +1,14 @@
-import { Button } from "@mui/material";
 import { type FormEvent, type ChangeEvent } from "react";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-
-function App() {
+import { MailOpen, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Navbar from "./Navbar";
+function FileUploadControls() {
   const [fileChosen, setFileChosen] = useState<boolean>(false);
-  const [fileName, setFileName] = useState<string>("");
+  // const [fileName, setFileName] = useState<string>("");
   const [success, setSuccess] = useState({ status: false, message: "" });
   const [loading, setLoading] = useState(false);
 
@@ -16,7 +19,7 @@ function App() {
     if (fileChosen) {
       const form = event.currentTarget;
       const formData = new FormData(form);
-
+      console.log(formData);
       // make an id for this user
       let userId = localStorage.getItem("userId");
       if (!userId) {
@@ -39,7 +42,7 @@ function App() {
           const data = await res.json();
           setSuccess({ status: true, message: JSON.stringify(data) });
         } else {
-          console.log("error with response");
+          console.log("Error with response");
           // setStatus("failure");
         }
         //
@@ -64,8 +67,8 @@ function App() {
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.files) {
       setFileChosen(true);
-      const file = event.target.files[0];
-      setFileName(file.name);
+      // const file = event.target.files[0];
+      // setFileName(file.name);
     } else {
       setFileChosen(false);
     }
@@ -76,33 +79,31 @@ function App() {
     <div>{success.message}</div>
   ) : (
     <form action="/api/fileUpload" method="POST" onSubmit={handleSubmit}>
-      <Button
-        type="submit"
-        variant="contained"
-        loading={loading}
-        loadingIndicator="Uploading..."
-      >
-        {/* {status === "idle" ? `Submit File` : `File failed to upload`} */}
-        Upload File
+      <Button type="submit" disabled={loading}>
+        {loading && <Loader2 className="animate-spin" />}
+        <MailOpen /> Upload File
       </Button>
 
-      <Button
-        component="label"
-        variant="outlined"
-        sx={{ maxWidth: "300px", overflow: "hidden" }}
+      <Label htmlFor="file">Markdown File</Label>
+      <Input
+        type="file"
+        id="file"
+        name="file"
+        accept=".md"
+        onChange={handleChange}
         disabled={loading}
-      >
-        {fileChosen ? `File Chosen: ${fileName}` : "Choose File"}
-        <input
-          type="file"
-          name="file"
-          accept=".md"
-          hidden
-          onChange={handleChange}
-        />
-      </Button>
+      />
     </form>
   );
 }
 
-export default App;
+function FileUpload() {
+  return (
+    <div>
+      <Navbar />
+      <FileUploadControls />
+    </div>
+  );
+}
+
+export default FileUpload;

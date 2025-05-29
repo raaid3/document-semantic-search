@@ -4,6 +4,9 @@ const uri = process.env.MONGODB_URI!;
 import { type EmbeddedChunk } from "../utils/embedding.js";
 const client = new MongoClient(uri);
 
+await client.connect();
+console.log("✅ Connected to MongoDB");
+
 const db = client.db("document-semantic-search");
 const files = db.collection("user_files");
 

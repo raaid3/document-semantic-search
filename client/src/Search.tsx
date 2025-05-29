@@ -1,10 +1,13 @@
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Navbar from "./Navbar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SearchIcon, Loader2 } from "lucide-react";
 import SearchResultCard from "./SearchResultCard";
 import SearchResultSkeleton from "./SearchResultSkeleton";
+
+// interfaces
 interface SearchResult {
   _id: string;
   content: string;
@@ -27,14 +30,23 @@ interface APIResponse<T> {
 }
 
 function SearchPage() {
-  const [query, setQuery] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams({ q: "" });
+  const q = searchParams.get("q") as string;
+  const [query, setQuery] = useState(q);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
 
-  const handleSearchSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  useEffect(() => {
+    setQuery(q);
+    if (q) {
+      performSearch();
+    }
+  }, [q]);
+
+  async function performSearch() {
+    // if query is empty
     if (!query.trim()) {
       setError("Please enter a search query.");
       return;
@@ -48,7 +60,7 @@ function SearchPage() {
     console.log(`Searching for: ${query}`);
     const userId = localStorage.getItem("userId");
     if (!userId) {
-      setError("Upload files before searching.");
+      setError("Please upload files before searching.");
       setIsLoading(false);
       return;
     }
@@ -87,6 +99,11 @@ function SearchPage() {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  const handleSearchSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSearchParams({ q: query });
   };
 
   return (
@@ -163,7 +180,7 @@ function SearchPage() {
             {!isLoading && !error && results.length > 0 && (
               <>
                 <p className="text-sm text-muted-foreground">
-                  Showing {results.length} result(s) for "{query}"
+                  Showing {results.length} result(s) for "{q}"
                 </p>
                 {results.map((result) => (
                   <SearchResultCard key={result._id} result={result} />

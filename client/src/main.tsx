@@ -5,6 +5,7 @@ import FileUpload from "./FileUpload.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./Home.tsx";
 import SearchPage from "./Search.tsx";
+import DocumentViewPage from "./DocumentView.tsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
   {
     path: "/search",
     element: <SearchPage />,
+  },
+  {
+    path: "/view-document/:chunkId",
+    element: <DocumentViewPage />,
   },
 ]);
 

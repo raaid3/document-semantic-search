@@ -4,7 +4,7 @@ import "./index.css";
 import FileUpload from "./FileUpload.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./Home.tsx";
-import Search from "./Search.tsx";
+import SearchPage from "./Search.tsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -16,7 +16,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/search",
-    element: <Search />,
+    element: <SearchPage />,
   },
 ]);
 

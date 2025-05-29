@@ -30,7 +30,7 @@ export async function queryDatabase(embedding: number[], userId: string) {
             index: "vector_index",
             path: "embedding",
             queryVector: embedding,
-            filter: { userId: userId },
+            filter: { sessionId: userId },
             numCandidates: 100,
             limit: 10,
           },

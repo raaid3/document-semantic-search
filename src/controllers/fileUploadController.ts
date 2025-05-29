@@ -4,7 +4,6 @@ import "dotenv/config";
 import {
   RecursiveMarkdownChunker,
   processMarkdownFile,
-  processMarkdownFileAdvanced,
   processMarkdownFileWithMath,
 } from "../utils/chunkers.js";
 import { embedChunks, type EmbeddedChunk } from "../utils/embedding.js";

@@ -41,11 +41,13 @@ function SearchPage() {
   useEffect(() => {
     setQuery(q);
     if (q) {
-      performSearch();
+      performSearch(q);
+    } else {
+      setResults([]);
     }
   }, [q]);
 
-  async function performSearch() {
+  async function performSearch(query: string) {
     // if query is empty
     if (!query.trim()) {
       setError("Please enter a search query.");

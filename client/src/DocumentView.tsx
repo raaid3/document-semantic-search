@@ -165,8 +165,8 @@ export default function DocumentViewPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="flex-grow container mx-auto px-4 py-8">
-        <article className="max-w-4xl mx-auto bg-card p-6 sm:p-8 rounded-lg shadow">
+      <main className="flex-grow container mx-auto px-4 py-8 ">
+        <article className="max-w-4xl mx-auto bg-card p-6 sm:p-8 rounded-lg shadow overflow-scroll">
           {documentTitle && (
             <h1 className="mb-6 border-b pb-4">{documentTitle}</h1>
           )}

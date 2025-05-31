@@ -14,7 +14,7 @@ export async function assembleDocument(chunkId: string) {
 
     const rawMarkdownChunks = chunks.map((chunk) => {
       if (chunk._id.equals(targetChunkObjectId)) {
-        return `<div id="target-chunk">${chunk.rawMarkdown}</div>`;
+        return `\n<div id="target-chunk">\n${chunk.rawMarkdown}\n</div>\n`;
       }
       return chunk.rawMarkdown;
     });

@@ -9,57 +9,65 @@ import {
 import { embedChunks, type EmbeddedChunk } from "../utils/embedding.js";
 import { storeChunks } from "../db/mongoClient.js";
 
-export async function processFile(req: Request, res: Response) {
-  console.log("Processing file...");
+export async function processFiles(req: Request, res: Response) {
+  console.log("Processing files...");
 
   try {
     // Get the user's unique id (generated client-side)
     const userId: string = req.body.userId;
-    const documentId: string = uuidv4();
-    const fileName = req.file.originalname;
-    const rawText = req.file.buffer.toString("utf8");
+    const files = req.files as Express.Multer.File[];
 
-    console.log(`Processing file: ${fileName} for user: ${userId}`);
+    // metadata
+    let numChunksCreated = 0;
+    let totalTokensEstimate = 0;
 
-    // Use math-aware chunker for better handling of mathematical content
-    const chunks = await processMarkdownFileWithMath(
-      rawText,
-      documentId,
-      fileName
-    );
+    for (const file of files) {
+      const documentId: string = uuidv4();
+      const fileName = file.originalname;
+      const rawText = file.buffer.toString("utf8");
 
-    console.log(`Created ${chunks.length} chunks from ${fileName}`);
+      console.log(`Processing file: ${fileName} for user: ${userId}`);
 
-    // Generate embeddings for all chunks
-    const embeddedChunks: EmbeddedChunk[] = await embedChunks(chunks, userId);
+      // Use math-aware chunker for better handling of mathematical content
+      const chunks = await processMarkdownFileWithMath(
+        rawText,
+        documentId,
+        fileName
+      );
 
-    // Log statistics
-    const totalTokensEstimate = embeddedChunks.reduce(
-      (sum, chunk) => sum + chunk.content.split(" ").length,
-      0
-    );
+      console.log(`Created ${chunks.length} chunks from ${fileName}`);
 
-    //storing in database
-    const result = await storeChunks(embeddedChunks);
+      // Generate embeddings for all chunks
+      const embeddedChunks: EmbeddedChunk[] = await embedChunks(chunks, userId);
+
+      // Log statistics
+      const tokensEstimate = embeddedChunks.reduce(
+        (sum, chunk) => sum + chunk.content.split(" ").length,
+        0
+      );
+
+      //storing in database
+      await storeChunks(embeddedChunks);
+
+      numChunksCreated += embeddedChunks.length;
+      totalTokensEstimate += tokensEstimate;
+    }
 
     res.status(200).json({
       success: true,
-      message: "File processed and embedded and stored successfully",
+      message: "Files processed and embedded and stored successfully",
       data: {
-        documentId,
-        filename: fileName,
-        chunksCreated: embeddedChunks.length,
+        filesStored: files.length,
+        chunksCreated: numChunksCreated,
         // mathChunks: mathChunks.length,
         estimatedTokens: totalTokensEstimate,
-        embeddingDimensions: embeddedChunks[0]?.embedding.length || 0,
-        storeResult: result,
       },
     });
   } catch (error) {
-    console.error("Error processing file:", error);
+    console.error("Error processing files:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to process file",
+      message: "Failed to process files",
       error: error instanceof Error ? error.message : "Unknown error",
     });
   }

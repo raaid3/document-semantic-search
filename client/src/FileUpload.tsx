@@ -92,6 +92,7 @@ function FileUploadControls() {
         accept=".md"
         onChange={handleChange}
         disabled={loading}
+        multiple
       />
     </form>
   );

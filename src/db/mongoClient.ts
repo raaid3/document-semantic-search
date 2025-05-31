@@ -1,4 +1,4 @@
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import "dotenv/config";
 const uri = process.env.MONGODB_URI!;
 import { type EmbeddedChunk } from "../utils/embedding.js";
@@ -8,7 +8,7 @@ await client.connect();
 console.log("✅ Connected to MongoDB");
 
 const db = client.db("document-semantic-search");
-const files = db.collection("user_files");
+const files = db.collection<EmbeddedChunk>("user_files");
 
 export async function storeChunks(chunks: EmbeddedChunk[]) {
   try {
@@ -49,5 +49,28 @@ export async function queryDatabase(embedding: number[], userId: string) {
   } catch (err) {
     console.error("Error Querying database");
     throw err;
+  }
+}
+
+export async function getDocumentInfoByChunkId(chunkId: string) {
+  try {
+    const chunk = await files.findOne({ _id: new ObjectId(chunkId) });
+    return { docId: chunk.documentId, docTitle: chunk.metadata.filename };
+  } catch (error) {
+    console.error(`Error fetching chunk from chunk id: ${chunkId}: `, error);
+    throw error;
+  }
+}
+
+export async function collectFileChunks(documentId: string) {
+  try {
+    const chunks = await files
+      .find({ documentId: documentId })
+      .sort({ "metadata.chunkIndex": 1 })
+      .toArray();
+    return chunks;
+  } catch (error) {
+    console.error(`Error collecting file chunks for ${documentId}: `, error);
+    throw error;
   }
 }

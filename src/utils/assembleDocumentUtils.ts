@@ -14,12 +14,12 @@ export async function assembleDocument(chunkId: string) {
 
     const rawMarkdownChunks = chunks.map((chunk) => {
       if (chunk._id.equals(targetChunkObjectId)) {
-        return `\n<div id="target-chunk">\n${chunk.rawMarkdown}\n</div>\n`;
+        return `<div id="target-chunk">${chunk.rawMarkdown}</div>`;
       }
       return chunk.rawMarkdown;
     });
 
-    return { rawMd: rawMarkdownChunks.join(""), docTitle: docTitle };
+    return { rawMd: rawMarkdownChunks.join("\n\n"), docTitle: docTitle };
   } catch (error) {
     console.error(
       `Error assembling document from chunk id: ${chunkId}: `,

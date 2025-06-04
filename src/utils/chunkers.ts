@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { ObjectId } from "mongodb";
 import removeMarkdown from "remove-markdown"
 
-const chunkSize = 1000; // characters
+const chunkSize = 900; // characters
 const chunkOverlap = 0; // characters
 
 export interface MarkdownChunk {
@@ -50,7 +50,7 @@ const chunker = new RecursiveCharacterTextSplitter({
 
 
 
-async function chunkDocument(
+export async function chunkDocument(
   markdown: string,
   documentId: string,
   filename: string

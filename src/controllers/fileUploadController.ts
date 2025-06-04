@@ -2,9 +2,7 @@ import { type Response, type Request } from "express";
 import { v4 as uuidv4 } from "uuid";
 import "dotenv/config";
 import {
-  RecursiveMarkdownChunker,
-  processMarkdownFile,
-  processMarkdownFileWithMath,
+  chunkDocument
 } from "../utils/chunkers.js";
 import { embedChunks, type EmbeddedChunk } from "../utils/embedding.js";
 import { storeChunks } from "../db/mongoClient.js";
@@ -29,7 +27,7 @@ export async function processFiles(req: Request, res: Response) {
       console.log(`Processing file: ${fileName} for user: ${userId}`);
 
       // Use math-aware chunker for better handling of mathematical content
-      const chunks = await processMarkdownFileWithMath(
+      const chunks = await chunkDocument(
         rawText,
         documentId,
         fileName
@@ -59,7 +57,6 @@ export async function processFiles(req: Request, res: Response) {
       data: {
         filesStored: files.length,
         chunksCreated: numChunksCreated,
-        // mathChunks: mathChunks.length,
         estimatedTokens: totalTokensEstimate,
       },
     });

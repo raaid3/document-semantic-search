@@ -45,7 +45,6 @@ export default function SearchResultCard({ result }: SearchResultCardProps) {
       </CardContent>
       <CardFooter>
         <Button variant="outline" size="sm" asChild className="ml-auto">
-          {/* Update link for specific file route */}
           <Link to={`/view-document/${result._id}`}>
             View Details
             <ExternalLink className="ml-2 h-4 w-4" />

@@ -23,6 +23,10 @@ const router = createBrowserRouter([
     path: "/view-document/:chunkId",
     element: <DocumentViewPage />,
   },
+  {
+    path: "*",
+    element: <Home />,
+  },
 ]);
 
 createRoot(document.getElementById("root")!).render(

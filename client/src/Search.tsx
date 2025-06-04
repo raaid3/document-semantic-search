@@ -59,7 +59,6 @@ function SearchPage() {
     setHasSearched(true);
     setResults([]);
 
-    console.log(`Searching for: ${query}`);
     const userId = localStorage.getItem("userId");
     if (!userId) {
       setError("Please upload files before searching.");
@@ -70,7 +69,6 @@ function SearchPage() {
     try {
       // Querying the API
       const APIQuery = JSON.stringify({ query, userId });
-      console.log(`Query: ${APIQuery}`);
       const response = await fetch("/api/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

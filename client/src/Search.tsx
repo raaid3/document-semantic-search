@@ -7,6 +7,8 @@ import { SearchIcon, Loader2 } from "lucide-react";
 import SearchResultCard from "./SearchResultCard";
 import SearchResultSkeleton from "./SearchResultSkeleton";
 
+const apiEndpoint = import.meta.env.VITE_API_URL as string;
+
 // interfaces
 interface SearchResult {
   _id: string;
@@ -69,7 +71,7 @@ function SearchPage() {
     try {
       // Querying the API
       const APIQuery = JSON.stringify({ query, userId });
-      const response = await fetch("/api/search", {
+      const response = await fetch(`${apiEndpoint}/api/search`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: APIQuery,

@@ -8,6 +8,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { TriangleAlert } from "lucide-react";
 import DocumentSkeleton from "./DocumentSkeleton";
 
+const apiEndpoint = import.meta.env.VITE_API_URL as string;
+
 interface APIResponse<T> {
   success: boolean;
   message: string;
@@ -31,7 +33,7 @@ export default function DocumentViewPage() {
     id: string
   ): Promise<AssembleDocumentResponseData> {
     try {
-      const response = await fetch(`/api/assembleDocument/${id}`);
+      const response = await fetch(`${apiEndpoint}/api/assembleDocument/${id}`);
       const responseData: APIResponse<AssembleDocumentResponseData> =
         await response.json();
 

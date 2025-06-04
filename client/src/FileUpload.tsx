@@ -15,6 +15,9 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
+
+const apiEndpoint = import.meta.env.VITE_API_URL as string;
+
 interface APIResponse<T> {
   success: boolean;
   message: string;
@@ -60,7 +63,7 @@ function FileUploadControls() {
 
 
     try {
-      const res = await fetch("/api/fileUpload", {
+      const res = await fetch(`${apiEndpoint}/api/fileUpload`, {
         method: "POST",
         body: formData,
       });

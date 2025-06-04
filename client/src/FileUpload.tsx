@@ -1,106 +1,172 @@
-import { type FormEvent, type ChangeEvent } from "react";
-import { useState } from "react";
+import { type FormEvent, type ChangeEvent, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { MailOpen, Loader2 } from "lucide-react";
+import { UploadCloud, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Navbar from "./Navbar";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
+interface APIResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
+
+interface SuccessData {
+  filesStored: number;
+  chunksCreated: number;
+  estimatedTokens: number;
+}
+
+interface FailureData {
+  error: string;
+}
+
 function FileUploadControls() {
-  const [fileChosen, setFileChosen] = useState<boolean>(false);
-  // const [fileName, setFileName] = useState<string>("");
-  const [success, setSuccess] = useState({ status: false, message: "" });
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const [successData, setSuccessData] = useState<SuccessData | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    // setStatus("uploading");
-    setLoading(true);
-    if (fileChosen) {
-      const form = event.currentTarget;
-      const formData = new FormData(form);
-      console.log(formData);
-      // make an id for this user
-      let userId = localStorage.getItem("userId");
-      if (!userId) {
-        userId = uuidv4();
-        localStorage.setItem("userId", userId);
-      }
-
-      // add this to the formData
-      formData.set("userId", userId);
-
-      // send file to API for doing stuff with it
-      try {
-        const res = await fetch("/api/fileUpload", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (res.ok) {
-          // setStatus("success");
-          const data = await res.json();
-          setSuccess({ status: true, message: JSON.stringify(data) });
-        } else {
-          console.log("Error with response");
-          // setStatus("failure");
-        }
-        //
-        // setLoading(false);
-      } catch {
-        // setStatus("failure");
-      }
-
-      formReset(form);
-    } else {
-      console.error(`No file chosen`);
-      // setStatus("idle");
+    if (!selectedFiles || selectedFiles.length === 0) {
+      setError("Please select at least one file to upload.");
+      return;
     }
-    setLoading(false);
-  }
 
-  function formReset(form: HTMLFormElement) {
-    setFileChosen(false);
-    form.reset();
+    setLoading(true);
+    setSuccessData(null);
+    setError(null);
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    let userId = localStorage.getItem("userId");
+    if (!userId) {
+      userId = uuidv4();
+      localStorage.setItem("userId", userId);
+    }
+    formData.set("userId", userId);
+
+
+    try {
+      const res = await fetch("/api/fileUpload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const responseData: APIResponse<SuccessData | FailureData> = await res.json();
+
+      if (res.ok && responseData.success) {
+        setSuccessData(responseData.data as SuccessData);
+      } else {
+        setError(responseData.message || "An unknown error occurred during upload.");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "A network error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+      form.reset();
+      setSelectedFiles(null);
+    }
   }
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    if (event.target.files) {
-      setFileChosen(true);
-      // const file = event.target.files[0];
-      // setFileName(file.name);
+    if (event.target.files && event.target.files.length > 0) {
+      setSelectedFiles(event.target.files);
+      setError(null);
+      setSuccessData(null);
     } else {
-      setFileChosen(false);
+      setSelectedFiles(null);
     }
-    // setStatus("idle");
   }
 
-  return success.status ? (
-    <div>{success.message}</div>
-  ) : (
-    <form action="/api/fileUpload" method="POST" onSubmit={handleSubmit}>
-      <Button type="submit" disabled={loading}>
-        {loading && <Loader2 className="animate-spin" />}
-        <MailOpen /> Upload File
-      </Button>
+  return (
+    <div className="container mx-auto px-4 py-8 flex justify-center">
+      <Card className="w-full max-w-lg">
+        <CardHeader>
+          <CardTitle className="text-2xl">Upload Markdown Files</CardTitle>
+          <CardDescription>
+            Select one or more .md files to process and store.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="file" className="text-sm font-medium">
+                Choose Markdown File(s)
+              </Label>
+              <Input
+                type="file"
+                id="file"
+                name="file"
+                accept=".md"
+                onChange={handleChange}
+                disabled={loading}
+                multiple
+                className="file:mr-4 file:py-0.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+              />
+              {selectedFiles && selectedFiles.length > 0 && (
+                <div className="mt-2 text-sm text-muted-foreground">
+                  <p>Selected files:</p>
+                  <ul className="list-disc list-inside">
+                    {Array.from(selectedFiles).map((file, index) => (
+                      <li key={index}>{file.name}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
 
-      <Label htmlFor="file">Markdown File</Label>
-      <Input
-        type="file"
-        id="file"
-        name="file"
-        accept=".md"
-        onChange={handleChange}
-        disabled={loading}
-        multiple
-      />
-    </form>
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <UploadCloud className="mr-2 h-4 w-4" />
+              )}
+              Upload File(s)
+            </Button>
+          </form>
+        </CardContent>
+
+        {(successData || error) && (
+          <CardFooter className="flex flex-col items-start space-y-4">
+            {successData && (
+              <Alert variant="default" className="w-full bg-green-50 border-green-300">
+                <CheckCircle2 className="h-5 w-5 text-green-600" />
+                <AlertTitle className="text-green-700">Upload Successful!</AlertTitle>
+                <AlertDescription className="text-green-600">
+                  Files stored: {successData.filesStored}
+                </AlertDescription>
+              </Alert>
+            )}
+            {error && (
+              <Alert variant="destructive" className="w-full">
+                <AlertCircle className="h-5 w-5" />
+                <AlertTitle>Upload Failed</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+          </CardFooter>
+        )}
+      </Card>
+    </div>
   );
 }
 
 function FileUpload() {
   return (
-    <div>
+    <div className="min-h-screen bg-background">
       <Navbar />
       <FileUploadControls />
     </div>

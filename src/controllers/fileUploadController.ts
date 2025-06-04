@@ -65,7 +65,9 @@ export async function processFiles(req: Request, res: Response) {
     res.status(500).json({
       success: false,
       message: "Failed to process files",
-      error: error instanceof Error ? error.message : "Unknown error",
+      data: {
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
     });
   }
 }

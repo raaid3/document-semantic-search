@@ -14,7 +14,7 @@ interface APIResponse<T> {
   data: T;
 }
 
-interface AssembleDocumentResponse {
+interface AssembleDocumentResponseData {
   rawMarkdown: string;
   documentTitle: string;
 }
@@ -29,10 +29,10 @@ export default function DocumentViewPage() {
 
   async function fetchDocumentById(
     id: string
-  ): Promise<AssembleDocumentResponse> {
+  ): Promise<AssembleDocumentResponseData> {
     try {
       const response = await fetch(`/api/assembleDocument/${id}`);
-      const responseData: APIResponse<AssembleDocumentResponse> =
+      const responseData: APIResponse<AssembleDocumentResponseData> =
         await response.json();
 
       if (!response.ok) {

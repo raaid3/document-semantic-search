@@ -15,7 +15,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       "/api": {
-        target: "https://file-semantic-search-production.up.railway.app",
+        target: "https://file-semantic-search.onrender.com",
         changeOrigin: true,
       },
     },

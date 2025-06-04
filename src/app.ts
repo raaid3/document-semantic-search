@@ -8,4 +8,6 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use("/api", apiRouter);
 
-app.listen(PORT);
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT} and host 0.0.0.0`);
+});

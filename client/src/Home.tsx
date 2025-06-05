@@ -14,7 +14,7 @@ function Home() {
 
 function Hero() {
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-background flex-grow flex items-center">
+    <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-background flex-grow flex justify-center">
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center space-y-6 text-center">
           <div className="space-y-3">
@@ -26,7 +26,7 @@ function Hero() {
               semantic search. Find what you need, faster.
             </p>
           </div>
-          <div className="space-x-4">
+          <div className="flex flex-wrap justify-center gap-3">
             <Button size="lg" asChild>
               <Link to="/fileUpload">
                 <UploadCloud className="mr-2 h-5 w-5 " />

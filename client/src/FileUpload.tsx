@@ -86,6 +86,29 @@ function FileUploadControls() {
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.files && event.target.files.length > 0) {
+      const maxFiles = 30;
+      const maxFileSize = 5 * 1024 * 1024;
+
+      if (event.target.files.length > maxFiles) {
+        setError(`You can only upload up to ${maxFiles} files at a time.`);
+        event.target.value = "";
+        setSelectedFiles(null);
+        setSuccessData(null);
+        return;
+      }
+
+      for (const file of Array.from(event.target.files)) {
+        if (file.size > maxFileSize) {
+          setError(
+            `File "${file.name}" (${(file.size / 1024 / 1024).toFixed(2)} MB) exceeds the ${maxFileSize} MB size limit.`
+          );
+          event.target.value = "";
+          setSelectedFiles(null);
+          setSuccessData(null);
+          return;
+        }
+      }
+
       setSelectedFiles(event.target.files);
       setError(null);
       setSuccessData(null);

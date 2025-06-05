@@ -9,7 +9,9 @@ const PORT = process.env.PORT;
 app.use(express.json());
 app.use(cors());
 app.use("/api", apiRouter);
-
+app.get("/ping", (req, res) => {
+  res.status(200).send("PONG");
+});
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });

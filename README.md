@@ -7,7 +7,7 @@ Perform semantic search on Markdown documents leveraging embeddings, chunking, a
 - **Markdown Upload & Chunking:** Upload Markdown documents, which are split into semantic chunks using a recursive text splitter. This supports robust handling of structured content.
 - **Embedding Generation:** Each chunk is embedded using Azure OpenAI's embedding API, ensuring high-quality semantic representation.
 - **Vector Database Search:** Embedded chunks are stored in MongoDB with vector search capabilities. Semantic queries are mapped to vectors and matched against stored chunks for highly relevant search results.
-- **React Frontend:** User-friendly React + Typescript UI with file upload, semantic search, and document viewing capabitlities.
+- **React Frontend:** User-friendly React + Typescript UI with file upload, semantic search, and document viewing capabitlities. Mobile-first responsive styling using TailwindCSS. 
 - **Express API Backend:** Handles file processing, embedding, chunk storage, and semantic query endpoints.
 
 ## Tech Stack
